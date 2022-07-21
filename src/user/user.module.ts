@@ -3,7 +3,8 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 
 @Module({
+  // imports: [InMemoryDBModule.forFeature('user')],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [UserService],
 })
 export class UserModule {}
