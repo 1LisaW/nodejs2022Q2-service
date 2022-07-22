@@ -1,26 +1,43 @@
 import { Injectable } from '@nestjs/common';
+import { TrackService } from 'src/track/track.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import { Favorite } from './entities/favorite.entity';
 
 @Injectable()
 export class FavoritesService {
-  create(createFavoriteDto: CreateFavoriteDto) {
-    return 'This action adds a new favorite';
+  private static favorites: Favorite = {};
+
+  constructor() {
+    FavoritesService.favorites = { artists: [], albums: [], tracks: [] };
+  }
+
+  create(key: string, id: string) {
+    FavoritesService.favorites[key].push(id);
+    return id;
   }
 
   findAll() {
-    return `This action returns all favorites`;
+    return FavoritesService.favorites;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} favorite`;
   }
 
-  update(id: number, updateFavoriteDto: UpdateFavoriteDto) {
-    return `This action updates a #${id} favorite`;
+  update(id: string, updateFavoriteDto: UpdateFavoriteDto) {
+    return id;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} favorite`;
+  remove(key: string, id: string) {
+    FavoritesService.favorites[key] = FavoritesService.favorites[key].filter(
+      (item) => item !== id,
+    );
+  }
+
+  cascadeRemove(attrName: string, id: string) {
+    FavoritesService.favorites[attrName] = FavoritesService.favorites[
+      attrName
+    ].filter((index) => index !== id);
   }
 }
