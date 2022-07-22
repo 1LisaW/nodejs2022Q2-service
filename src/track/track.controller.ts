@@ -20,11 +20,15 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
+import { FavoritesService } from 'src/favorites/favorites.service';
 
 console.log('####### in controller module');
 @Controller('track')
 export class TrackController {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly favoritesService: FavoritesService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -45,7 +49,6 @@ export class TrackController {
   })
   @Get()
   getAll(): Track[] {
-    console.log('!!!!! in getAll controller');
     try {
       return this.trackService.findAll();
     } catch (err) {
@@ -56,9 +59,7 @@ export class TrackController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    console.log(id, isUUID(id, 4));
     if (!isUUID(id, 4)) {
-      console.log('im here');
       throw new HttpException({}, HttpStatus.BAD_REQUEST);
     }
 
@@ -83,7 +84,8 @@ export class TrackController {
   remove(@Param('id') id: string) {
     this.findOne(id);
     try {
-      return this.trackService.remove(id);
+      this.trackService.remove(id);
+      this.favoritesService.cascadeRemove('tracks', id);
     } catch (err) {
       throw new NotFoundException();
     }

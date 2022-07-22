@@ -12,6 +12,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { isUUID } from 'class-validator';
+import { FavoritesService } from 'src/favorites/favorites.service';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -23,6 +24,7 @@ export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
+    private readonly favoritesService: FavoritesService,
   ) {}
 
   @Post()
@@ -79,6 +81,7 @@ export class AlbumController {
     try {
       this.trackService.cascadeRemove('albumId', id);
       this.albumService.remove(id);
+      this.favoritesService.cascadeRemove('albums', id);
     } catch (err) {
       throw new NotFoundException();
     }

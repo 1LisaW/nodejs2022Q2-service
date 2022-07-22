@@ -19,7 +19,6 @@ export class TrackService {
   }
 
   findAll(): Track[] {
-    console.dir('tracks', TrackService.tracks);
     return TrackService.tracks;
   }
 
@@ -29,7 +28,7 @@ export class TrackService {
 
   update(id: string, updateTrackDto: UpdateTrackDto) {
     const track = this.findOne(id);
-    const newTrack = { ...track, ...updateTrackDto };
+    const newTrack = { ...track, updateTrackDto };
     this.remove(id);
     TrackService.tracks = [...TrackService.tracks, newTrack];
     return newTrack;
@@ -39,5 +38,11 @@ export class TrackService {
     TrackService.tracks = TrackService.tracks.filter(
       (track) => track.id !== id,
     );
+  }
+
+  cascadeRemove(attrName: string, id: string) {
+    TrackService.tracks.forEach((track) => {
+      if (track[attrName] === id) track[attrName] = null;
+    });
   }
 }
