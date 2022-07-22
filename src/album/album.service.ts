@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { v4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
+  private static albums: Array<Album> = [];
+
+  constructor() {
+    AlbumService.albums = [];
+  }
   create(createAlbumDto: CreateAlbumDto) {
-    return 'This action adds a new album';
+    const album: Album = { ...createAlbumDto, id: v4() };
+    AlbumService.albums.push(album);
+    return album;
   }
 
   findAll() {
-    return `This action returns all album`;
+    return AlbumService.albums;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} album`;
+  findOne(id: string) {
+    return AlbumService.albums.find((album) => album.id === id);
   }
 
-  update(id: number, updateAlbumDto: UpdateAlbumDto) {
-    return `This action updates a #${id} album`;
+  update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = this.findOne(id);
+    const newAlbum = { ...album, ...updateAlbumDto };
+    this.remove(id);
+    AlbumService.albums = [...AlbumService.albums, newAlbum];
+    return newAlbum;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} album`;
+  remove(id: string) {
+    AlbumService.albums = AlbumService.albums.filter(
+      (album) => album.id !== id,
+    );
+  }
+
+  cascadeRemoveArtist(id: string) {
+    AlbumService.albums.forEach((album) => {
+      if (album.artistId === id) album.artistId = null;
+    });
   }
 }
