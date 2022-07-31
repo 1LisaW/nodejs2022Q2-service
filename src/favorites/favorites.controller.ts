@@ -11,7 +11,6 @@ import {
   Put,
   HttpException,
 } from '@nestjs/common';
-import { InMemoryDBService } from '@nestjs-addons/in-memory-db';
 import { FavoritesService } from './favorites.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';

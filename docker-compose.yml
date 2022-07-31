@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "admin123"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - microservice_nestjs
+    restart: unless-stopped
+
+  app:
+    image: api:v1
+    container_name: api
+    build:
+      context: ./src
+      dockerfile: ../Dockerfile
+    env_file: .env
+    ports:
+      - "80:4000"
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - microservice_nestjs
+
+networks:
+  microservice_nestjs:
+#    driver: bridge
+
+volumes:
+  postgres:
